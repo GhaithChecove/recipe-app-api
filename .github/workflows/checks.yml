@@ -21,4 +21,3 @@ jobs:
       - name: Lint
         run: docker-compose run --rm app sh -c "flake8"
         
-        # D51D1EB2C40DEA06DC2E9999E8CE89E54BF9AB2A
