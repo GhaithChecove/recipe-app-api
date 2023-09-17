@@ -1,5 +1,9 @@
 version: "3.9"
-
+##############   first step to configure database in docker-compose  SECOND STEP 
+###############    SECOND step we have to configure the database with dajango app
+# # this is first step that we create the app that will hold the django 
+# # project and run on the docker image with the url and port defined 
+# # below in ports and commands keys
 services:
   app:
     build:
@@ -12,7 +16,41 @@ services:
       - ./app:/app
     
     command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py wait_for_db && configs:
+            python manage.py migrate && 
+            python manage.py runserver 0.0.0.0:8000"
+    ## this section declare and confirm the variables 
+    ## of the database host, name , user, password 
+    ## which these all picked up from the environment section of 
+    ## db service 
+    environment:
+      - DB_HOST=db
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASS=changeme
+    depends_on:
+      - db
 
+# ############ this is the second step that we create the dpendecies of the
+# # postgres database 
+  db:
+  ## first we set the postgres database image that obtained from dockerhub
+  ## which is her postgres and the tag is 13-alpine3.18
+    image: postgres:13-alpine3.18
+    ## here we set the value of the volum variable dev-db-data 
+    ## that holds the location of our data base image will be saved
+    volumes:
+      - dev-db-data:/var/lib/postgres/data
+    ## this is the environment variable that holds the postgres database
+    ## and the postgres user 
+    ## postgres password
+    environment:
+    - POSTGRES_DB=devdb
+    - POSTGRES_USER=devuser
+    - POSTGRES_PASSWORD=changeme
 
+## these are the variables that will used in the volumes of the database 
+## db section and in volumes configurations
+volumes:
+  dev-db-data:
     
